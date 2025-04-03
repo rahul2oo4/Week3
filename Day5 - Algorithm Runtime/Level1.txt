@@ -1,0 +1,688 @@
+1. Problem Statement: Search a Target in a Large Dataset
+Objective:
+Compare the performance of Linear Search (O(N)) and Binary Search (O(log N)) on different dataset sizes.
+Approach:
+Linear Search: Scan each element until the target is found.
+Binary Search: Sort the data first (O(N log N)), then perform O(log N) search.
+Comparative Analysis:
+Dataset Size (N)
+Linear Search (O(N))
+Binary Search (O(log N))
+1,000
+1ms
+0.01ms
+10,000
+10ms
+0.02ms
+1,000,000
+1s
+0.1ms
+
+Expected Result:
+Binary Search performs much better for large datasets, provided data is sorted.
+
+//package Time_Complexity;
+
+public class Search {
+
+    private static long seed = 123456789;
+
+    private static int nextRandom(int max) {
+        seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+        return (int)(seed % max);
+    }
+
+    public static int linearSearch(int[] arr, int target) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == target) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int binarySearch(int[] arr, int target) {
+        int left = 0;
+        int right = arr.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == target) {
+                return mid;
+            } else if (arr[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    public static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+    private static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        return i + 1;
+    }
+
+    public static int[] generateRandomArray(int size) {
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = nextRandom(size * 10);
+        }
+        return arr;
+    }
+
+    public static void main(String[] args) {
+        int[] datasetSizes = {1000, 10000, 1000000};
+        int target = -1;
+
+        System.out.println("Dataset Size (N) | Linear Search Time (ms) | Binary Search Time (ms)");
+        System.out.println("---------------------------------------------------------------");
+
+        for (int size : datasetSizes) {
+            int[] data = generateRandomArray(size);
+
+            long startLinear = System.nanoTime();
+            linearSearch(data, target);
+            long endLinear = System.nanoTime();
+            double linearTimeMs = (endLinear - startLinear) / 1_000_000.0;
+
+            long startSort = System.nanoTime();
+            quickSort(data, 0, data.length - 1);
+            long endSort = System.nanoTime();
+            double sortTimeMs = (endSort - startSort) / 1_000_000.0;
+
+            long startBinary = System.nanoTime();
+            binarySearch(data, target);
+            long endBinary = System.nanoTime();
+            double binaryTimeMs = (endBinary - startBinary) / 1_000_000.0;
+
+            System.out.printf("%15d | %22.4f | %21.4f (sort: %.4f)%n", size, linearTimeMs, binaryTimeMs, sortTimeMs);
+        }
+
+        System.out.println("\nNote: Binary Search time excludes sorting time. Sorting is O(N log N).");
+        System.out.println("Expected Result: Binary Search performs much better for large datasets, provided data is sorted.");
+    }
+}
+
+
+
+
+
+
+2. Problem Statement: Sorting Large Data Efficiently
+Objective:
+Compare sorting algorithms Bubble Sort (O(N²)), Merge Sort (O(N log N)), and Quick Sort (O(N log N)).
+Approach:
+Bubble Sort: Repeated swapping (inefficient for large data).
+Merge Sort: Divide & Conquer approach (stable).
+Quick Sort: Partition-based approach (fast but unstable).
+
+
+
+Comparative Analysis:
+Dataset Size (N)
+Bubble Sort (O(N²))
+Merge Sort (O(N log N))
+Quick Sort (O(N log N))
+1,000
+50ms
+5ms
+3ms
+10,000
+5s
+50ms
+30ms
+1,000,000
+Unfeasible (>1hr)
+3s
+2s
+
+Expected Result:
+Bubble Sort is impractical for large datasets.
+Merge Sort & Quick Sort perform well.
+
+
+//package Time_Complexity;
+
+import java.util.Random;
+
+public class Sorting {
+
+    public static void bubbleSort(int[] arr) {
+        int n = arr.length;
+        boolean swapped;
+        for (int i = 0; i < n - 1; i++) {
+            swapped = false;
+            for (int j = 0; j < n - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                    swapped = true;
+                }
+            }
+            if (!swapped) break;
+        }
+    }
+
+    public static void mergeSort(int[] arr, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            mergeSort(arr, left, mid);
+            mergeSort(arr, mid + 1, right);
+            merge(arr, left, mid, right);
+        }
+    }
+
+    private static void merge(int[] arr, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        int[] L = new int[n1];
+        int[] R = new int[n2];
+
+        System.arraycopy(arr, left, L, 0, n1);
+        System.arraycopy(arr, mid + 1, R, 0, n2);
+
+        int i = 0, j = 0, k = left;
+
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k++] = L[i++];
+            } else {
+                arr[k++] = R[j++];
+            }
+        }
+
+        while (i < n1) {
+            arr[k++] = L[i++];
+        }
+
+        while (j < n2) {
+            arr[k++] = R[j++];
+        }
+    }
+
+    public static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+    private static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        return i + 1;
+    }
+
+    public static int[] generateRandomArray(int size) {
+        Random rand = new Random();
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = rand.nextInt(size * 10);
+        }
+        return arr;
+    }
+
+    public static void main(String[] args) {
+        int[] datasetSizes = {1000, 10000, 1000000};
+
+        System.out.println("Dataset Size (N) | Bubble Sort Time (ms) | Merge Sort Time (ms) | Quick Sort Time (ms)");
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        for (int size : datasetSizes) {
+            int[] dataForBubble = null;
+            if (size <= 10000) { // Limit bubble sort to 10,000 elements for feasibility
+                dataForBubble = generateRandomArray(size);
+            }
+            int[] dataForMerge = generateRandomArray(size);
+            int[] dataForQuick = generateRandomArray(size);
+
+            double bubbleTimeMs = -1;
+            if (dataForBubble != null) {
+                long startBubble = System.nanoTime();
+                bubbleSort(dataForBubble);
+                long endBubble = System.nanoTime();
+                bubbleTimeMs = (endBubble - startBubble) / 1_000_000.0;
+            }
+
+            long startMerge = System.nanoTime();
+            mergeSort(dataForMerge, 0, dataForMerge.length - 1);
+            long endMerge = System.nanoTime();
+            double mergeTimeMs = (endMerge - startMerge) / 1_000_000.0;
+
+            long startQuick = System.nanoTime();
+            quickSort(dataForQuick, 0, dataForQuick.length - 1);
+            long endQuick = System.nanoTime();
+            double quickTimeMs = (endQuick - startQuick) / 1_000_000.0;
+
+            System.out.printf("%15d | %21s | %19.4f | %18.4f%n",
+                    size,
+                    (bubbleTimeMs < 0 ? "Unfeasible" : String.format("%.4f", bubbleTimeMs)),
+                    mergeTimeMs,
+                    quickTimeMs);
+        }
+
+        System.out.println("\nNote: Bubble Sort is limited to datasets of size 10,000 or less due to performance constraints.");
+        System.out.println("Merge Sort and Quick Sort perform well on large datasets.");
+    }
+}
+
+
+
+
+
+
+3. Problem Statement: String Concatenation Performance
+Objective:
+Compare the performance of String (O(N²)), StringBuilder (O(N)), and StringBuffer (O(N)) when concatenating a million strings.
+Approach:
+Using String (Immutable, creates new object each time)
+Using StringBuilder (Fast, mutable, thread-unsafe)
+Using StringBuffer (Thread-safe, slightly slower than StringBuilder)
+Comparative Analysis:
+Operations Count (N)
+String (O(N²))
+StringBuilder (O(N))
+StringBuffer (O(N))
+1,000
+10ms
+1ms
+2ms
+10,000
+1s
+10ms
+12ms
+1,000,000
+30m (Unusable)
+50ms
+60ms
+
+Expected Result:
+StringBuilder & StringBuffer are much more efficient than String.
+Use StringBuilder for single-threaded operations and StringBuffer for multi-threaded.
+
+
+//package Time_Complexity;
+
+import java.util.Random;
+
+public class Sorting {
+
+    public static void bubbleSort(int[] arr) {
+        int n = arr.length;
+        boolean swapped;
+        for (int i = 0; i < n - 1; i++) {
+            swapped = false;
+            for (int j = 0; j < n - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                    swapped = true;
+                }
+            }
+            if (!swapped) break;
+        }
+    }
+
+    public static void mergeSort(int[] arr, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            mergeSort(arr, left, mid);
+            mergeSort(arr, mid + 1, right);
+            merge(arr, left, mid, right);
+        }
+    }
+
+    private static void merge(int[] arr, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        int[] L = new int[n1];
+        int[] R = new int[n2];
+
+        System.arraycopy(arr, left, L, 0, n1);
+        System.arraycopy(arr, mid + 1, R, 0, n2);
+
+        int i = 0, j = 0, k = left;
+
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k++] = L[i++];
+            } else {
+                arr[k++] = R[j++];
+            }
+        }
+
+        while (i < n1) {
+            arr[k++] = L[i++];
+        }
+
+        while (j < n2) {
+            arr[k++] = R[j++];
+        }
+    }
+
+    public static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+    private static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        return i + 1;
+    }
+
+    public static int[] generateRandomArray(int size) {
+        Random rand = new Random();
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = rand.nextInt(size * 10);
+        }
+        return arr;
+    }
+
+    public static void main(String[] args) {
+        int[] datasetSizes = {1000, 10000, 1000000};
+
+        System.out.println("Dataset Size (N) | Bubble Sort Time (ms) | Merge Sort Time (ms) | Quick Sort Time (ms)");
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        for (int size : datasetSizes) {
+            int[] dataForBubble = null;
+            if (size <= 10000) { // Limit bubble sort to 10,000 elements for feasibility
+                dataForBubble = generateRandomArray(size);
+            }
+            int[] dataForMerge = generateRandomArray(size);
+            int[] dataForQuick = generateRandomArray(size);
+
+            double bubbleTimeMs = -1;
+            if (dataForBubble != null) {
+                long startBubble = System.nanoTime();
+                bubbleSort(dataForBubble);
+                long endBubble = System.nanoTime();
+                bubbleTimeMs = (endBubble - startBubble) / 1_000_000.0;
+            }
+
+            long startMerge = System.nanoTime();
+            mergeSort(dataForMerge, 0, dataForMerge.length - 1);
+            long endMerge = System.nanoTime();
+            double mergeTimeMs = (endMerge - startMerge) / 1_000_000.0;
+
+            long startQuick = System.nanoTime();
+            quickSort(dataForQuick, 0, dataForQuick.length - 1);
+            long endQuick = System.nanoTime();
+            double quickTimeMs = (endQuick - startQuick) / 1_000_000.0;
+
+            System.out.printf("%15d | %21s | %19.4f | %18.4f%n",
+                    size,
+                    (bubbleTimeMs < 0 ? "Unfeasible" : String.format("%.4f", bubbleTimeMs)),
+                    mergeTimeMs,
+                    quickTimeMs);
+        }
+
+        System.out.println("\nNote: Bubble Sort is limited to datasets of size 10,000 or less due to performance constraints.");
+        System.out.println("Merge Sort and Quick Sort perform well on large datasets.");
+    }
+}
+
+
+
+
+
+
+4. Problem Statement: Large File Reading Efficiency
+Objective:
+Compare FileReader (Character Stream) and InputStreamReader (Byte Stream) when reading a large file (500MB).
+Approach:
+FileReader: Reads character by character (slower for binary files).
+InputStreamReader: Reads bytes and converts to characters (more efficient).
+Comparative Analysis:
+File Size
+FileReader Time
+InputStreamReader Time
+1MB
+50ms
+30ms
+100MB
+3s
+1.5s
+500MB
+10s
+5s
+
+Expected Result:
+InputStreamReader is more efficient for large files.
+FileReader is preferable for text-based data.
+
+
+import java.io.*;
+
+public class FileComparison {
+    public static void main(String[] args) throws IOException {
+        File largeFile = new File("largefile.txt"); // Replace with the path to your 500MB file
+
+        // Measure time for FileReader
+        long startTime = System.currentTimeMillis();
+        try (FileReader fileReader = new FileReader(largeFile);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            while (bufferedReader.readLine() != null) {
+                // Reading line by line
+            }
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("FileReader time: " + (endTime - startTime) + "ms");
+
+        // Measure time for InputStreamReader
+        startTime = System.currentTimeMillis();
+        try (FileInputStream fileInputStream = new FileInputStream(largeFile);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            while (bufferedReader.readLine() != null) {
+                // Reading line by line
+            }
+        }
+        endTime = System.currentTimeMillis();
+        System.out.println("InputStreamReader time: " + (endTime - startTime) + "ms");
+    }
+}
+
+
+
+
+5. Problem Statement: Recursive vs Iterative Fibonacci Computation
+Objective:
+Compare Recursive (O(2ⁿ)) vs Iterative (O(N)) Fibonacci solutions.
+Approach:
+Recursive:
+public static int fibonacciRecursive(int n) {
+    if (n <= 1) return n;
+    return fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2);
+}
+
+Iterative:
+public static int fibonacciIterative(int n) {
+    int a = 0, b = 1, sum;
+    for (int i = 2; i <= n; i++) {
+        sum = a + b;
+        a = b;
+        b = sum;
+    }
+    return b;
+}
+Comparative Analysis:
+Fibonacci (N)
+Recursive (O(2ⁿ))
+Iterative (O(N))
+10
+1ms
+0.01ms
+30
+5s
+0.05ms
+50
+Unfeasible (>1hr)
+0.1ms
+
+Expected Result:
+Recursive approach is infeasible for large values of N due to exponential growth.
+The iterative approach is significantly faster and memory-efficient.
+
+
+public class Fibinacci {
+
+    public static int fibonacciRecursive(int n) {
+        if (n <= 1) return n;
+        return fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2);
+    }
+
+    public static int fibonacciIterative(int n) {
+        if (n <= 1) return n;
+        int a = 0, b = 1, sum = 0;
+        for (int i = 2; i <= n; i++) {
+            sum = a + b;
+            a = b;
+            b = sum;
+        }
+        return b;
+    }
+
+    public static void main(String[] args) {
+        int n = 30; // Change this value to test different Fibonacci numbers
+
+        // Measure time for recursive approach
+        long startRecursive = System.currentTimeMillis();
+        int resultRecursive = fibonacciRecursive(n);
+        long endRecursive = System.currentTimeMillis();
+        System.out.println("Recursive result: " + resultRecursive + ", Time: " + (endRecursive - startRecursive) + "ms");
+
+        // Measure time for iterative approach
+        long startIterative = System.currentTimeMillis();
+        int resultIterative = fibonacciIterative(n);
+        long endIterative = System.currentTimeMillis();
+        System.out.println("Iterative result: " + resultIterative + ", Time: " + (endIterative - startIterative) + "ms");
+    }
+}
+
+
+
+
+6. Problem Statement: Comparing Different Data Structures for Searching
+Objective:
+Compare Array (O(N)), HashSet (O(1)), and TreeSet (O(log N)) for searching elements.
+Approach:
+Array: Linear search (O(N)).
+HashSet: Uses hashing (O(1) on average).
+TreeSet: Balanced BST (O(log N)).
+Comparative Analysis:
+Dataset Size (N)
+Array Search (O(N))
+HashSet Search (O(1))
+TreeSet Search (O(log N))
+1,000
+1ms
+0.01ms
+0.1ms
+100,000
+100ms
+0.01ms
+10ms
+1,000,000
+1s
+0.01ms
+20ms
+
+Expected Result:
+HashSet is fastest for lookups but requires extra memory.
+TreeSet maintains order but is slightly slower than HashSet.
+
+
+import java.util.*;
+
+public class DS {
+
+    public static void main(String[] args) {
+        int datasetSize = 1_000_000; 
+        int target = datasetSize + 1;
+        int[] array = new int[datasetSize];
+        HashSet<Integer> hashSet = new HashSet<>();
+        TreeSet<Integer> treeSet = new TreeSet<>();
+        for (int i = 0; i < datasetSize; i++) {
+            array[i] = i;
+            hashSet.add(i);
+            treeSet.add(i);
+        }
+
+        long startArray = System.currentTimeMillis();
+        boolean foundInArray = false;
+        for (int num : array) {
+            if (num == target) {
+                foundInArray = true;
+                break;
+            }
+        }
+        long endArray = System.currentTimeMillis();
+        System.out.println("Array search time: " + (endArray - startArray) + "ms");
+        long startHashSet = System.currentTimeMillis();
+        boolean foundInHashSet = hashSet.contains(target);
+        long endHashSet = System.currentTimeMillis();
+        System.out.println("HashSet search time: " + (endHashSet - startHashSet) + "ms");
+
+        // Measure time for TreeSet (O(log N) Search)
+        long startTreeSet = System.currentTimeMillis();
+        boolean foundInTreeSet = treeSet.contains(target);
+        long endTreeSet = System.currentTimeMillis();
+        System.out.println("TreeSet search time: " + (endTreeSet - startTreeSet) + "ms");
+    }
+}
+
+
+
