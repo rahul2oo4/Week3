@@ -1,0 +1,555 @@
+StringBuilder Problem 1: Reverse a String Using StringBuilder
+Problem:
+Write a program that uses StringBuilder to reverse a given string. For example, if the input is "hello", the output should be "olleh".
+Approach:
+Create a new StringBuilder object.
+Append the string to the StringBuilder.
+Use the reverse() method of StringBuilder to reverse the string.
+Convert the StringBuilder back to a string and return it.
+public class reverse_string {
+   public static void main(String[] args) {
+       String input = "hello";
+       StringBuilder sb = new StringBuilder(input);
+       String reversed = sb.reverse().toString();
+       System.out.println(reversed);
+   }
+}
+
+
+StringBuilder Problem 2: Remove Duplicates from a String Using StringBuilder
+Problem:
+Write a program that uses StringBuilder to remove all duplicate characters from a given string while maintaining the original order.
+Approach:
+Initialize an empty StringBuilder and a HashSet to keep track of characters.
+Iterate over each character in the string:
+If the character is not in the HashSet, append it to the StringBuilder and add it to the HashSet.
+Return the StringBuilder as a string without duplicates.
+
+import java.util.HashSet;
+
+public class Remove_duplicates {
+   public static String removeDuplicates(String input) {
+       StringBuilder result = new StringBuilder();
+       HashSet<Character> seen = new HashSet<>();
+
+       for (char c : input.toCharArray()) {
+           if (!seen.contains(c)) {
+               result.append(c);
+               seen.add(c);
+           }
+       }
+       return result.toString();
+   }
+
+   public static void main(String[] args) {
+       String input = "programming";
+       System.out.println(removeDuplicates(input));
+   }
+}
+
+
+
+StringBuffer Problem 1: Concatenate Strings Efficiently Using StringBuffer
+Problem:
+You are given an array of strings. Write a program that uses StringBuffer to concatenate all the strings in the array efficiently.
+Approach:
+Create a new StringBuffer object.
+Iterate through each string in the array and append it to the StringBuffer.
+Return the concatenated string after the loop finishes.
+Using StringBuffer ensures efficient string concatenation due to its mutable nature.
+
+
+public class Concatenate {
+   public static void main(String[] args) {
+       String[] strings = {"Hello", "World", "This", "Is", "Java"};
+       String result = concatenateStrings(strings);
+       System.out.println(result);
+   }
+
+   public static String concatenateStrings(String[] strings) {
+       StringBuffer stringBuffer = new StringBuffer();
+       for (String str : strings) {
+           stringBuffer.append(str);
+       }
+       return stringBuffer.toString();
+   }
+}
+
+
+
+
+StringBuffer Problem 2: Compare StringBuffer with StringBuilder for String Concatenation
+Problem:
+Write a program that compares the performance of StringBuffer and StringBuilder for concatenating strings. For large datasets (e.g., concatenating 1 million strings), compare the execution time of both classes.
+Approach:
+Initialize two StringBuffer and StringBuilder objects.
+Perform string concatenation in both objects, appending 1 million strings (e.g., "hello").
+Measure the time taken to complete the concatenation using System.nanoTime() for both StringBuffer and StringBuilder.
+Output the time taken by both classes for comparison.
+
+
+public class CompareStringBuffer {
+   public static void main(String[] args) {
+       StringBuffer stringBuffer = new StringBuffer();
+       StringBuilder stringBuilder = new StringBuilder();
+
+       // Measure time for StringBuffer
+       long startTimeBuffer = System.nanoTime();
+       for (int i = 0; i < 1000000; i++) {
+           stringBuffer.append("hello");
+       }
+       long endTimeBuffer = System.nanoTime();
+
+       // Measure time for StringBuilder
+       long startTimeBuilder = System.nanoTime();
+       for (int i = 0; i < 1000000; i++) {
+           stringBuilder.append("hello");
+       }
+       long endTimeBuilder = System.nanoTime();
+
+       // Output the results
+       System.out.println("StringBuffer time (ns): " + (endTimeBuffer - startTimeBuffer));
+       System.out.println("StringBuilder time (ns): " + (endTimeBuilder - startTimeBuilder));
+   }
+}
+
+
+
+
+FileReader Problem 1: Read a File Line by Line Using FileReader
+Problem:
+Write a program that uses FileReader to read a text file line by line and print each line to the console.
+Approach:
+Create a FileReader object to read from the file.
+Wrap the FileReader in a BufferedReader to read lines efficiently.
+Use a loop to read each line using the readLine() method and print it to the console.
+Close the file after reading all the lines.
+
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class Read_file {
+   public static void main(String[] args) {
+       FileInputStream fis = null;
+       try {
+           fis = new FileInputStream("input.txt");
+           StringBuilder line = new StringBuilder();
+           int character;
+           while ((character = fis.read()) != -1) {
+               if (character == '\n') {
+                   System.out.println(line.toString());
+                   line.setLength(0); // Clear the StringBuilder for the next line
+               } else {
+                   line.append((char) character);
+               }
+           }
+           // Print the last line if the file doesn't end with a newline
+           if (line.length() > 0) {
+               System.out.println(line.toString());
+           }
+       } catch (IOException e) {
+           e.printStackTrace();
+       } finally {
+           if (fis != null) {
+               try {
+                   fis.close();
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           }
+       }
+   }
+}
+
+
+
+
+
+
+FileReader Problem 2: Count the Occurrence of a Word in a File Using FileReader
+Problem:
+Write a program that uses FileReader and BufferedReader to read a file and count how many times a specific word appears in the file.
+Approach:
+Create a FileReader to read from the file and wrap it in a BufferedReader.
+Initialize a counter variable to keep track of word occurrences.
+For each line in the file, split it into words and check if the target word exists.
+Increment the counter each time the word is found.
+Print the final count.
+
+
+import java.io.FileReader;
+import java.io.BufferedReader;
+
+public class File_readertwo {
+   public static void main(String[] args) {
+       String targetWord = "example"; // Replace with the word to count
+       int count = 0;
+
+       try {
+           FileReader fileReader = new FileReader("input.txt"); // Replace with your file path
+           BufferedReader bufferedReader = new BufferedReader(fileReader);
+           String line;
+
+           while ((line = bufferedReader.readLine()) != null) {
+               String[] words = line.split(" ");
+               for (String word : words) {
+                   if (word.equals(targetWord)) {
+                       count++;
+                   }
+               }
+           }
+
+           bufferedReader.close();
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+
+       System.out.println("The word '" + targetWord + "' appears " + count + " times.");
+   }
+}
+
+
+
+
+InputStreamReader Problem 1: Convert Byte Stream to Character Stream Using InputStreamReader
+Problem:
+Write a program that uses InputStreamReader to read binary data from a file and print it as characters. The file contains data encoded in a specific charset (e.g., UTF-8).
+Approach:
+Create a FileInputStream object to read the binary data from the file.
+Wrap the FileInputStream in an InputStreamReader to convert the byte stream into a character stream.
+Use a BufferedReader to read characters efficiently from the InputStreamReader.
+Read the file line by line and print the characters to the console.
+Handle any encoding exceptions as needed.
+
+
+import java.io.*;
+
+public class Convert_Byte {
+   public static void main(String[] args) {
+       String filePath = "input.txt"; // Replace with your file path
+       try (FileInputStream fileInputStream = new FileInputStream(filePath);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+
+           String line;
+           while ((line = bufferedReader.readLine()) != null) {
+               System.out.println(line);
+           }
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+   }
+}
+
+
+
+
+InputStreamReader Problem 2: Read User Input and Write to File Using InputStreamReader
+Problem:
+Write a program that uses InputStreamReader to read user input from the console and write the input to a file. Each input should be written as a new line in the file.
+Approach:
+Create an InputStreamReader to read from System.in (the console).
+Wrap the InputStreamReader in a BufferedReader for efficient reading.
+Create a FileWriter to write to the file.
+Read user input using readLine() and write the input to the file.
+Repeat the process until the user enters "exit" to stop inputting.
+Close the file after the input is finished.
+
+
+import java.io.*;
+
+public class Userinput_write {
+   public static void main(String[] args) {
+       try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            FileWriter writer = new FileWriter("output.txt")) {
+           String input;
+           while (!(input = reader.readLine()).equalsIgnoreCase("exit")) {
+               writer.write(input + System.lineSeparator());
+           }
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+   }
+}
+
+
+
+
+Challenge Problem: Compare StringBuilder, StringBuffer, FileReader, and InputStreamReader
+Problem:
+Write a program that:
+Uses StringBuilder and StringBuffer to concatenate a list of strings 1,000,000 times.
+Uses FileReader and InputStreamReader to read a large file (e.g., 100MB) and print the number of words in the file.
+Approach:
+StringBuilder and StringBuffer:
+Create a list of strings (e.g., "hello").
+Concatenate the strings 1,000,000 times using both StringBuilder and StringBuffer.
+Measure and compare the time taken for each.
+FileReader and InputStreamReader:
+Read a large text file (100MB) using FileReader and InputStreamReader.
+Count the number of words by splitting the text on whitespace characters.
+Print the word count and compare the time taken for reading the file.
+
+
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Challenge {
+   public static void main(String[] args) throws IOException {
+       // StringBuilder and StringBuffer comparison
+       String[] strings = {"hello"};
+       int iterations = 1_000_000;
+
+       long startTime = System.currentTimeMillis();
+       StringBuilder stringBuilder = new StringBuilder();
+       for (int i = 0; i < iterations; i++) {
+           stringBuilder.append(strings[0]);
+       }
+       long endTime = System.currentTimeMillis();
+       System.out.println("StringBuilder time: " + (endTime - startTime) + "ms");
+
+       startTime = System.currentTimeMillis();
+       StringBuffer stringBuffer = new StringBuffer();
+       for (int i = 0; i < iterations; i++) {
+           stringBuffer.append(strings[0]);
+       }
+       endTime = System.currentTimeMillis();
+       System.out.println("StringBuffer time: " + (endTime - startTime) + "ms");
+
+       // FileReader and InputStreamReader comparison
+       File file = new File("largefile.txt");
+
+       startTime = System.currentTimeMillis();
+       FileReader fileReader = new FileReader(file);
+       BufferedReader bufferedReader = new BufferedReader(fileReader);
+       int wordCount = 0;
+       String line;
+       while ((line = bufferedReader.readLine()) != null) {
+           StringTokenizer tokenizer = new StringTokenizer(line);
+           wordCount += tokenizer.countTokens();
+       }
+       bufferedReader.close();
+       endTime = System.currentTimeMillis();
+       System.out.println("FileReader word count: " + wordCount + ", time: " + (endTime - startTime) + "ms");
+
+       startTime = System.currentTimeMillis();
+       InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file));
+       BufferedReader bufferedReader2 = new BufferedReader(inputStreamReader);
+       wordCount = 0;
+       while ((line = bufferedReader2.readLine()) != null) {
+           StringTokenizer tokenizer = new StringTokenizer(line);
+           wordCount += tokenizer.countTokens();
+       }
+       bufferedReader2.close();
+       endTime = System.currentTimeMillis();
+       System.out.println("InputStreamReader word count: " + wordCount + ", time: " + (endTime - startTime) + "ms");
+   }
+}
+
+
+
+
+Linear Search Problem 1: Search for the First Negative Number
+Problem:
+You are given an integer array. Write a program that performs Linear Search to find the first negative number in the array. If a negative number is found, return its index. If no negative number is found, return -1.
+Approach:
+Iterate through the array from the start.
+Check if the current element is negative.
+If a negative number is found, return its index.
+If the loop completes without finding a negative number, return -1.
+
+
+public class First_negative {
+   public static int findFirstNegative(int[] arr) {
+       for (int i = 0; i < arr.length; i++) {
+           if (arr[i] < 0) {
+               return i;
+           }
+       }
+       return -1;
+   }
+
+   public static void main(String[] args) {
+       int[] array = {1, 2, 3, -4, 5};
+       System.out.println(findFirstNegative(array));
+   }
+}
+
+
+
+
+Linear Search Problem 2: Search for a Specific Word in a List of Sentences
+Problem:
+You are given an array of sentences (strings). Write a program that performs Linear Search to find the first sentence containing a specific word. If the word is found, return the sentence. If no sentence contains the word, return "Not Found".
+Approach:
+Iterate through the list of sentences.
+For each sentence, check if it contains the specific word.
+If the word is found, return the current sentence.
+If no sentence contains the word, return "Not Found".
+
+
+import java.util.Scanner;
+
+public class wordinsentence {
+   public static void main(String[] args) {
+       Scanner scanner = new Scanner(System.in);
+
+       System.out.println("Enter the number of sentences:");
+       int n = scanner.nextInt();
+       scanner.nextLine(); // Consume newline
+
+       String[] sentences = new String[n];
+       System.out.println("Enter the sentences:");
+       for (int i = 0; i < n; i++) {
+           sentences[i] = scanner.nextLine();
+       }
+
+       System.out.println("Enter the word to search:");
+       String word = scanner.nextLine();
+
+       String result = linearSearch(sentences, word);
+       System.out.println(result);
+   }
+
+   public static String linearSearch(String[] sentences, String word) {
+       for (String sentence : sentences) {
+           if (sentence.contains(word)) {
+               return sentence;
+           }
+       }
+       return "Not Found";
+   }
+}
+
+
+
+Binary Search Problem 1: Find the Rotation Point in a Rotated Sorted Array
+Problem:
+You are given a rotated sorted array. Write a program that performs Binary Search to find the index of the smallest element in the array (the rotation point).
+Approach:
+Initialize left as 0 and right as n - 1.
+Perform a binary search:
+Find the middle element mid = (left + right) / 2.
+If arr[mid] > arr[right], then the smallest element is in the right half, so update left = mid + 1.
+If arr[mid] < arr[right], the smallest element is in the left half, so update right = mid.
+Continue until left equals right, and then return arr[left] (the rotation point).
+
+
+public class Binary_one {
+   public static int findRotationPoint(int[] arr) {
+       int left = 0, right = arr.length - 1;
+       while (left < right) {
+           int mid = left + (right - left) / 2;
+           if (arr[mid] > arr[right]) {
+               left = mid + 1;
+           } else {
+               right = mid;
+           }
+       }
+       return left;
+   }
+
+   public static void main(String[] args) {
+       int[] arr = {4, 5, 6, 7, 0, 1, 2};
+       System.out.println(findRotationPoint(arr));
+   }
+}
+
+
+
+
+Binary Search Problem 2: Find the Peak Element in an Array
+Problem:
+A peak element is an element that is greater than its neighbors. Write a program that performs Binary Search to find a peak element in an array. If there are multiple peak elements, return any one of them.
+Approach:
+Initialize left as 0 and right as n - 1.
+Perform a binary search:
+Find the middle element mid = (left + right) / 2.
+If arr[mid] > arr[mid - 1] and arr[mid] > arr[mid + 1], arr[mid] is a peak element.
+If arr[mid] < arr[mid - 1], then search the left half, updating right = mid - 1.
+If arr[mid] < arr[mid + 1], then search the right half, updating left = mid + 1.
+Continue until a peak element is found.
+
+
+class Binary_two {
+   public static int findPeakElement(int[] arr) {
+       int left = 0, right = arr.length - 1;
+       while (left < right) {
+           int mid = (left + right) / 2;
+           if (arr[mid] > arr[mid - 1] && arr[mid] > arr[mid + 1]) {
+               return arr[mid];
+           } else if (arr[mid] < arr[mid - 1]) {
+               right = mid - 1;
+           } else {
+               left = mid + 1;
+           }
+       }
+       return arr[left];
+   }
+
+   public static void main(String[] args) {
+       int[] arr = {1, 3, 20, 4, 1, 0};
+       System.out.println(findPeakElement(arr));
+   }
+}
+
+
+
+
+Binary Search Problem 3: Search for a Target Value in a 2D Sorted Matrix
+Problem:
+You are given a 2D matrix where each row is sorted in ascending order, and the first element of each row is greater than the last element of the previous row. Write a program that performs Binary Search to find a target value in the matrix. If the value is found, return true. Otherwise, return false.
+Approach:
+Treat the matrix as a 1D array (flattened version).
+Initialize left as 0 and right as rows * columns - 1.
+Perform binary search:
+Find the middle element index mid = (left + right) / 2.
+Convert mid to row and column indices using row = mid / numColumns and col = mid % numColumns.
+Compare the middle element with the target:
+If it matches, return true.
+If the target is smaller, search the left half by updating right = mid - 1.
+If the target is larger, search the right half by updating left = mid + 1.
+If the element is not found, return false.
+
+
+public class Binary_three {
+   public static boolean searchMatrix(int[][] matrix, int target) {
+       if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+           return false;
+       }
+
+       int rows = matrix.length;
+       int cols = matrix[0].length;
+       int left = 0, right = rows * cols - 1;
+
+       while (left <= right) {
+           int mid = left + (right - left) / 2;
+           int midValue = matrix[mid / cols][mid % cols];
+
+           if (midValue == target) {
+               return true;
+           } else if (midValue < target) {
+               left = mid + 1;
+           } else {
+               right = mid - 1;
+           }
+       }
+
+       return false;
+   }
+
+   public static void main(String[] args) {
+       int[][] matrix = {
+           {1, 3, 5, 7},
+           {10, 11, 16, 20},
+           {23, 30, 34, 60}
+       };
+       int target = 3;
+
+       System.out.println(searchMatrix(matrix, target)); // Output: true
+   }
+}
+
+
+
