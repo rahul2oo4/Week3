@@ -1,0 +1,444 @@
+Sample Problems for Stacks and Queues
+Implement a Queue Using Stacks
+Problem: Design a queue using two stacks such that enqueue and dequeue operations are performed efficiently.
+Hint: Use one stack for enqueue and another stack for dequeue. Transfer elements between stacks as needed.
+
+public class Queue_stacks {
+   private static class Stack {
+       private int[] arr;
+       private int top;
+       private int capacity;
+
+       public Stack(int size) {
+           arr = new int[size];
+           top = -1;
+           capacity = size;
+       }
+
+       public void push(int data) {
+           if (top == capacity - 1) {
+               throw new RuntimeException("Stack overflow");
+           }
+           arr[++top] = data;
+       }
+
+       public int pop() {
+           if (isEmpty()) {
+               throw new RuntimeException("Stack underflow");
+           }
+           return arr[top--];
+       }
+
+       public boolean isEmpty() {
+           return top == -1;
+       }
+   }
+
+   private Stack stack1;
+   private Stack stack2;
+
+   public Queue_stacks(int size) {
+       stack1 = new Stack(size);
+       stack2 = new Stack(size);
+   }
+
+   public void enqueue(int data) {
+       stack1.push(data);
+   }
+
+   public int dequeue() {
+       if (stack2.isEmpty()) {
+           while (!stack1.isEmpty()) {
+               stack2.push(stack1.pop());
+           }
+       }
+       if (stack2.isEmpty()) {
+           throw new RuntimeException("Queue is empty");
+       }
+       return stack2.pop();
+   }
+
+   public static void main(String[] args) {
+       Queue_stacks queue = new Queue_stacks(10);
+       queue.enqueue(1);
+       queue.enqueue(2);
+       queue.enqueue(3);
+       System.out.println(queue.dequeue());
+       System.out.println(queue.dequeue());
+       queue.enqueue(4);
+       System.out.println(queue.dequeue());
+       System.out.println(queue.dequeue());
+   }
+}
+
+
+
+Sort a Stack Using Recursion
+Problem: Given a stack, sort its elements in ascending order using recursion.
+Hint: Pop elements recursively, sort the remaining stack, and insert the popped element back at the correct position.
+element back at the correct position.
+public class Stack_recursion {
+   public static void sortStack(int[] stack, int top) {
+       if (top >= 0) {
+           int temp = stack[top];
+           top--;
+           sortStack(stack, top);
+           top = insertInSortedOrder(stack, top, temp);
+       }
+   }
+
+   private static int insertInSortedOrder(int[] stack, int top, int element) {
+       if (top == -1 || element > stack[top]) {
+           stack[++top] = element;
+           return top;
+       } else {
+           int temp = stack[top];
+           top--;
+           top = insertInSortedOrder(stack, top, element);
+           stack[++top] = temp;
+           return top;
+       }
+   }
+
+   public static void main(String[] args) {
+       int[] stack = new int[10];
+       int top = -1;
+
+       stack[++top] = 3;
+       stack[++top] = 1;
+       stack[++top] = 4;
+       stack[++top] = 2;
+
+       sortStack(stack, top);
+
+       while (top >= 0) {
+           System.out.println(stack[top--]);
+       }
+   }
+}
+
+
+
+Stock Span Problem
+Problem: For each day in a stock price array, calculate the span (number of consecutive days the price was less than or equal to the current day's price).
+Hint: Use a stack to keep track of indices of prices in descending order.
+
+class Stock_span {
+   public static void main(String[] args) {
+       int[] prices = {100, 80, 60, 70, 60, 75, 85};
+       int[] span = calculateSpan(prices);
+       for (int s : span) {
+           System.out.print(s + " ");
+       }
+   }
+
+   static int[] calculateSpan(int[] prices) {
+       int n = prices.length;
+       int[] span = new int[n];
+       int[] stack = new int[n];
+       int top = -1;
+
+       for (int i = 0; i < n; i++) {
+           while (top != -1 && prices[stack[top]] <= prices[i]) {
+               top--;
+           }
+           span[i] = (top == -1) ? (i + 1) : (i - stack[top]);
+           stack[++top] = i;
+       }
+       return span;
+   }
+}
+
+
+
+Sliding Window Maximum
+Problem: Given an array and a window size k, find the maximum element in each sliding window of size k.
+Hint: Use a deque (double-ended queue) to maintain indices of useful elements in each window.
+
+import java.util.*;
+
+public class Sliding_window {
+   public static int[] maxSlidingWindow(int[] nums, int k) {
+       if (nums == null || k <= 0) return new int[0];
+       int n = nums.length;
+       int[] result = new int[n - k + 1];
+       Deque<Integer> deque = new ArrayDeque<>();
+       for (int i = 0; i < n; i++) {
+           if (!deque.isEmpty() && deque.peek() < i - k + 1) deque.poll();
+           while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) deque.pollLast();
+           deque.offer(i);
+           if (i >= k - 1) result[i - k + 1] = nums[deque.peek()];
+       }
+       return result;
+   }
+
+   public static void main(String[] args) {
+       int[] nums = {1, 3, -1, -3, 5, 3, 6, 7};
+       int k = 3;
+       int[] result = maxSlidingWindow(nums, k);
+       System.out.println(Arrays.toString(result));
+   }
+}
+
+
+
+Circular Tour Problem
+Problem: Given a set of petrol pumps with petrol and distance to the next pump, determine the starting point for completing a circular tour.
+Hint: Use a queue to simulate the tour, keeping track of surplus petrol at each pump.
+
+
+public class Circular_tour {
+   static class PetrolPump {
+       int petrol;
+       int distance;
+
+       PetrolPump(int petrol, int distance) {
+           this.petrol = petrol;
+           this.distance = distance;
+       }
+   }
+
+   public static int findStartingPoint(PetrolPump[] pumps) {
+       int surplus = 0, deficit = 0, start = 0;
+
+       for (int i = 0; i < pumps.length; i++) {
+           surplus += pumps[i].petrol - pumps[i].distance;
+
+           if (surplus < 0) {
+               deficit += surplus;
+               surplus = 0;
+               start = i + 1;
+           }
+       }
+
+       return (surplus + deficit >= 0) ? start : -1;
+   }
+
+   public static void main(String[] args) {
+       PetrolPump[] pumps = {
+           new PetrolPump(4, 6),
+           new PetrolPump(6, 5),
+           new PetrolPump(7, 3),
+           new PetrolPump(4, 5)
+       };
+
+       int start = findStartingPoint(pumps);
+       System.out.println(start);
+   }
+}
+
+
+
+
+	
+
+Sample Problems for Hash Maps & Hash Functions
+Find All Subarrays with Zero Sum
+Problem: Given an array, find all subarrays whose elements sum up to zero.
+Hint: Use a hash map to store the cumulative sum and its frequency. If a sum repeats, a zero-sum subarray exists.
+
+class Problem1 {
+    static class Pair {
+        int key;
+        int value;
+        Pair(int k, int v) {
+            key = k;
+            value = v;
+        }
+    }
+
+    static void findSubarrays(int[] arr) {
+        int n = arr.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) sum[i + 1] = sum[i] + arr[i];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j <= n; j++) {
+                if (sum[j] - sum[i] == 0)
+                    System.out.println("Subarray: [" + i + "..." + (j - 1) + "]");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {3, 4, -7, 3, 1, 3, -4, -2, -2};
+        findSubarrays(arr);
+    }
+}
+
+
+
+Check for a Pair with Given Sum in an Array
+Problem: Given an array and a target sum, find if there exists a pair of elements whose sum is equal to the target.
+Hint: Store visited numbers in a hash map and check if target - current_number exists in the map.
+class Problem2 {
+    static boolean hasPair(int[] arr, int target) {
+        for (int i = 0; i < arr.length; i++)
+            for (int j = i + 1; j < arr.length; j++)
+                if (arr[i] + arr[j] == target)
+                    return true;
+        return false;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {10, 15, 3, 7};
+        int target = 17;
+        System.out.println(hasPair(arr, target));
+    }
+}
+
+
+
+
+
+Longest Consecutive Sequence
+Problem: Given an unsorted array, find the length of the longest consecutive elements sequence.
+Hint: Use a hash map to store elements and check for consecutive elements efficiently.
+
+class Problem3 {
+    static void sort(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++)
+            for (int j = 0; j < arr.length - i - 1; j++)
+                if (arr[j] > arr[j + 1]) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+    }
+
+    static int longestConsecutive(int[] arr) {
+        if (arr.length == 0) return 0;
+        sort(arr);
+        int maxLen = 1, currLen = 1;
+
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] == arr[i - 1]) continue;
+            if (arr[i] == arr[i - 1] + 1)
+                currLen++;
+            else
+                currLen = 1;
+            if (currLen > maxLen)
+                maxLen = currLen;
+        }
+        return maxLen;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {100, 4, 200, 1, 3, 2};
+        System.out.println(longestConsecutive(arr));
+    }
+}
+
+
+
+
+
+Implement a Custom Hash Map
+Problem: Design and implement a basic hash map class with operations for insertion, deletion, and retrieval.
+Hint: Use an array of linked lists to handle collisions using separate chaining.
+class Problem4 {
+    static class Node {
+        int key, value;
+        Node next;
+
+        Node(int k, int v) {
+            key = k;
+            value = v;
+            next = null;
+        }
+    }
+
+    static class MyHashMap {
+        final int SIZE = 100;
+        Node[] table = new Node[SIZE];
+
+        int hash(int key) {
+            return key % SIZE;
+        }
+
+        void put(int key, int value) {
+            int idx = hash(key);
+            Node head = table[idx];
+
+            while (head != null) {
+                if (head.key == key) {
+                    head.value = value;
+                    return;
+                }
+                head = head.next;
+            }
+
+            Node newNode = new Node(key, value);
+            newNode.next = table[idx];
+            table[idx] = newNode;
+        }
+
+        int get(int key) {
+            int idx = hash(key);
+            Node head = table[idx];
+
+            while (head != null) {
+                if (head.key == key)
+                    return head.value;
+                head = head.next;
+            }
+            return -1;
+        }
+
+        void remove(int key) {
+            int idx = hash(key);
+            Node head = table[idx], prev = null;
+
+            while (head != null) {
+                if (head.key == key) {
+                    if (prev == null)
+                        table[idx] = head.next;
+                    else
+                        prev.next = head.next;
+                    return;
+                }
+                prev = head;
+                head = head.next;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        MyHashMap map = new MyHashMap();
+        map.put(1, 100);
+        map.put(2, 200);
+        System.out.println(map.get(1)); // 100
+        map.remove(1);
+        System.out.println(map.get(1)); // -1
+    }
+}
+
+
+
+
+
+Two Sum Problem
+Problem: Given an array and a target sum, find two indices such that their values add up to the target.
+Hint: Use a hash map to store the index of each element as you iterate. Check if target - current_element exists in the map.
+
+
+class Problem5 {
+    static int[] twoSum(int[] arr, int target) {
+        for (int i = 0; i < arr.length; i++)
+            for (int j = i + 1; j < arr.length; j++)
+                if (arr[i] + arr[j] == target)
+                    return new int[]{i, j};
+        return new int[]{-1, -1};
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {2, 7, 11, 15};
+        int target = 9;
+        int[] res = twoSum(arr, target);
+        System.out.println("Indices: " + res[0] + ", " + res[1]); // 0,1
+    }
+}
+
+
+
+
